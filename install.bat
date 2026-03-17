@@ -145,20 +145,36 @@ pause
 goto STEP6
 
 :: ---------------------------------------------------------
-:: 6. Activate Windows and Office
+:: 6. Download and Run Activate.cmd
 :: ---------------------------------------------------------
 :STEP6
-call :progress 6 "Opening Activate.cmd as Administrator..."
-set "ACTIVATE_FILE=%~dp0Activate.cmd"
+call :progress 6 "Downloading and running Activate.cmd..."
+
+set "ACTIVATE_URL=https://raw.githubusercontent.com/iamrudyard/rx-script/main/Activate.cmd"
+set "ACTIVATE_FILE=%WORKDIR%\Activate.cmd"
+
+echo Downloading Activate.cmd...
+powershell -Command "Invoke-WebRequest -Uri '%ACTIVATE_URL%' -OutFile '%ACTIVATE_FILE%' -UseBasicParsing"
 
 if exist "%ACTIVATE_FILE%" (
-    echo Opening Activate.cmd as Administrator...
-    powershell -Command "Start-Process -FilePath '%ACTIVATE_FILE%' -Verb RunAs"
+    echo Download complete.
+    echo Running as Administrator...
+    
+    powershell -Command "Start-Process '%ACTIVATE_FILE%' -Verb RunAs"
 ) else (
-    echo Activate.cmd not found in this folder:
-    echo %~dp0
+    echo Failed to download Activate.cmd.
     pause
     goto FINISH
+)
+
+echo.
+echo Instructions:
+echo - Activate Windows: Select 1
+echo - Activate Microsoft Office: Select 2 then 1
+echo.
+
+pause
+goto FINISH
 )
 
 echo.
